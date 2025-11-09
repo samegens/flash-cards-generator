@@ -19,6 +19,9 @@ const MARGIN_MM: f32 = 5.0;
 const CARD_WIDTH_MM: f32 = (A4_WIDTH_MM - 2.0 * MARGIN_MM) / GRID_COLS as f32;
 const CARD_HEIGHT_MM: f32 = (A4_HEIGHT_MM - 2.0 * MARGIN_MM) / GRID_ROWS as f32;
 
+// Text positioning
+const TEXT_MARGIN_MM: f32 = 10.0;
+
 #[derive(Parser, Debug)]
 #[command(author, version, about = "Generate flash cards PDF from CSV", long_about = None)]
 struct Args {
@@ -201,10 +204,13 @@ fn draw_card_grid(
             // Draw text rotated 90 degrees clockwise
             let text = if is_front { &card.side_a } else { &card.side_b };
 
-            // Center text in card and rotate 90 degrees clockwise
+            // Position text and rotate 90 degrees clockwise
             let font_size = 18.0;
+
+            // For 90° clockwise rotation, text flows downward
+            // Center horizontally, align with top of card
             let text_x = x + card_width_mm / 2.0;
-            let text_y = y + card_height_mm / 2.0;
+            let text_y = y + card_height_mm - TEXT_MARGIN_MM;
 
             // Begin text section
             current_layer.begin_text_section();
