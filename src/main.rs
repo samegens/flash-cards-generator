@@ -88,12 +88,8 @@ fn generate_pdf(cards: &[FlashCard], output_path: &PathBuf) -> Result<()> {
         total_pages + 2 // Add one more sheet (front + back)
     };
 
-    let (doc, page1, layer1) = PdfDocument::new(
-        "Flash Cards",
-        Mm(A4_WIDTH_MM),
-        Mm(A4_HEIGHT_MM),
-        "Layer 1",
-    );
+    let (doc, page1, layer1) =
+        PdfDocument::new("Flash Cards", Mm(A4_WIDTH_MM), Mm(A4_HEIGHT_MM), "Layer 1");
 
     // Load a built-in bold font
     let font = doc.add_builtin_font(BuiltinFont::HelveticaBold)?;
@@ -105,9 +101,8 @@ fn generate_pdf(cards: &[FlashCard], output_path: &PathBuf) -> Result<()> {
     for sheet_idx in 0..(total_pages / 2) {
         let start_idx = sheet_idx * CARDS_PER_PAGE;
         let end_idx = (start_idx + CARDS_PER_PAGE).min(cards.len());
-        let sheet_cards: Vec<Option<&FlashCard>> = (start_idx..end_idx)
-            .map(|i| cards.get(i))
-            .collect();
+        let sheet_cards: Vec<Option<&FlashCard>> =
+            (start_idx..end_idx).map(|i| cards.get(i)).collect();
 
         // Create front page (side A)
         if sheet_idx > 0 {
@@ -189,7 +184,10 @@ fn draw_card_grid(
             let points = vec![
                 (Point::new(Mm(x), Mm(y)), false),
                 (Point::new(Mm(x + card_width_mm), Mm(y)), false),
-                (Point::new(Mm(x + card_width_mm), Mm(y + card_height_mm)), false),
+                (
+                    Point::new(Mm(x + card_width_mm), Mm(y + card_height_mm)),
+                    false,
+                ),
                 (Point::new(Mm(x), Mm(y + card_height_mm)), false),
             ];
 
