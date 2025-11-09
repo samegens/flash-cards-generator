@@ -94,8 +94,8 @@ fn generate_pdf(cards: &[FlashCard], output_path: &PathBuf) -> Result<()> {
         "Layer 1",
     );
 
-    // Load a built-in font
-    let font = doc.add_builtin_font(BuiltinFont::Helvetica)?;
+    // Load a built-in bold font
+    let font = doc.add_builtin_font(BuiltinFont::HelveticaBold)?;
 
     let mut current_layer = layer1;
     let mut current_page = page1;
@@ -207,7 +207,7 @@ fn draw_card_grid(
             let text = if is_front { &card.side_a } else { &card.side_b };
 
             // Center text in card and rotate 90 degrees clockwise
-            let font_size = 12.0;
+            let font_size = 18.0;
             let text_x = x + card_width_mm / 2.0;
             let text_y = y + card_height_mm / 2.0;
 
