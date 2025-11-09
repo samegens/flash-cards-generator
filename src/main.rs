@@ -5,6 +5,20 @@ use std::fs::File;
 use std::io::BufWriter;
 use std::path::PathBuf;
 
+// Grid layout constants
+const GRID_COLS: usize = 4;
+const GRID_ROWS: usize = 4;
+const CARDS_PER_PAGE: usize = GRID_COLS * GRID_ROWS;
+
+// A4 dimensions in mm
+const A4_WIDTH_MM: f32 = 210.0;
+const A4_HEIGHT_MM: f32 = 297.0;
+const MARGIN_MM: f32 = 5.0;
+
+// Calculate card dimensions
+const CARD_WIDTH_MM: f32 = (A4_WIDTH_MM - 2.0 * MARGIN_MM) / GRID_COLS as f32;
+const CARD_HEIGHT_MM: f32 = (A4_HEIGHT_MM - 2.0 * MARGIN_MM) / GRID_ROWS as f32;
+
 #[derive(Parser, Debug)]
 #[command(author, version, about = "Generate flash cards PDF from CSV", long_about = None)]
 struct Args {
@@ -63,19 +77,6 @@ fn read_csv(path: &PathBuf) -> Result<Vec<FlashCard>> {
 }
 
 fn generate_pdf(cards: &[FlashCard], output_path: &PathBuf) -> Result<()> {
-    const CARDS_PER_PAGE: usize = 16; // 4x4 grid
-    const GRID_COLS: usize = 4;
-    const GRID_ROWS: usize = 4;
-
-    // A4 dimensions in mm
-    const A4_WIDTH_MM: f32 = 210.0;
-    const A4_HEIGHT_MM: f32 = 297.0;
-
-    // Calculate card dimensions
-    const MARGIN_MM: f32 = 5.0;
-    const CARD_WIDTH_MM: f32 = (A4_WIDTH_MM - 2.0 * MARGIN_MM) / GRID_COLS as f32;
-    const CARD_HEIGHT_MM: f32 = (A4_HEIGHT_MM - 2.0 * MARGIN_MM) / GRID_ROWS as f32;
-
     // Calculate total pages needed (2 pages per sheet: front + back)
     let total_sheets = (cards.len() + CARDS_PER_PAGE - 1) / CARDS_PER_PAGE;
     let total_pages = total_sheets * 2; // front and back
@@ -164,10 +165,6 @@ fn draw_card_grid(
     card_height_mm: f32,
     margin_mm: f32,
 ) {
-    const GRID_COLS: usize = 4;
-    const GRID_ROWS: usize = 4;
-    const A4_HEIGHT_MM: f32 = 297.0;
-
     let current_layer = doc.get_page(page).get_layer(layer);
 
     for (idx, card_opt) in cards.iter().enumerate() {
