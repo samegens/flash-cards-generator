@@ -5,6 +5,7 @@ A Rust command-line application that generates printable flash cards from CSV da
 ## Features
 
 - Generates A4 PDF documents with 16 flash cards per double-sided page (4x4 grid)
+- Text is rotated 90 degrees clockwise to maximize space for longer content
 - Supports pipe-delimited CSV input with no headers
 - Correctly aligns front and back sides for double-sided printing along the long edge
 - Automatically generates an even number of pages

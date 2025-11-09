@@ -203,21 +203,34 @@ fn draw_card_grid(
 
             current_layer.add_line(line);
 
-            // Draw text
+            // Draw text rotated 90 degrees clockwise
             let text = if is_front { &card.side_a } else { &card.side_b };
 
-            // Center text in card
+            // Center text in card and rotate 90 degrees clockwise
             let font_size = 12.0;
             let text_x = x + card_width_mm / 2.0;
             let text_y = y + card_height_mm / 2.0;
 
-            current_layer.use_text(
-                text,
-                font_size,
-                Mm(text_x),
-                Mm(text_y),
-                font,
-            );
+            // Begin text section
+            current_layer.begin_text_section();
+
+            // Set font
+            current_layer.set_font(font, font_size);
+
+            // Set line height (required)
+            current_layer.set_line_height(font_size);
+
+            // Use transformation matrix for rotation
+            // For 90 degrees clockwise rotation
+            current_layer.set_text_matrix(TextMatrix::TranslateRotate(
+                Mm(text_x).into(),
+                Mm(text_y).into(),
+                -90.0, // degrees, not radians
+            ));
+
+            current_layer.write_text(text, font);
+
+            current_layer.end_text_section();
         }
     }
 }
