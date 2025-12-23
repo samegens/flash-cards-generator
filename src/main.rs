@@ -13,7 +13,7 @@ const CARDS_PER_PAGE: usize = GRID_COLS * GRID_ROWS;
 // A4 dimensions in mm
 const A4_WIDTH_MM: f32 = 210.0;
 const A4_HEIGHT_MM: f32 = 297.0;
-const MARGIN_MM: f32 = 5.0;
+const MARGIN_MM: f32 = 0.0;
 
 // Calculate card dimensions
 const CARD_WIDTH_MM: f32 = (A4_WIDTH_MM - 2.0 * MARGIN_MM) / GRID_COLS as f32;
@@ -229,23 +229,30 @@ fn draw_card_grid(
             let x = margin_mm + col as f32 * card_width_mm;
             let y = A4_HEIGHT_MM - margin_mm - (row + 1) as f32 * card_height_mm;
 
-            // Draw card border
-            let points = vec![
-                (Point::new(Mm(x), Mm(y)), false),
-                (Point::new(Mm(x + card_width_mm), Mm(y)), false),
-                (
-                    Point::new(Mm(x + card_width_mm), Mm(y + card_height_mm)),
-                    false,
-                ),
-                (Point::new(Mm(x), Mm(y + card_height_mm)), false),
-            ];
+            // Draw cutting lines (only interior borders, not outer edges)
+            // Draw right border if not the last column
+            if col < GRID_COLS - 1 {
+                let line = Line {
+                    points: vec![
+                        (Point::new(Mm(x + card_width_mm), Mm(y)), false),
+                        (Point::new(Mm(x + card_width_mm), Mm(y + card_height_mm)), false),
+                    ],
+                    is_closed: false,
+                };
+                current_layer.add_line(line);
+            }
 
-            let line = Line {
-                points,
-                is_closed: true,
-            };
-
-            current_layer.add_line(line);
+            // Draw top border if not the first row
+            if row > 0 {
+                let line = Line {
+                    points: vec![
+                        (Point::new(Mm(x), Mm(y + card_height_mm)), false),
+                        (Point::new(Mm(x + card_width_mm), Mm(y + card_height_mm)), false),
+                    ],
+                    is_closed: false,
+                };
+                current_layer.add_line(line);
+            }
 
             // Draw text rotated 90 degrees clockwise with word wrapping
             let text = if is_front { &card.side_a } else { &card.side_b };
