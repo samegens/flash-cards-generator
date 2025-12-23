@@ -152,6 +152,52 @@ fn generate_pdf(cards: &[FlashCard], output_path: &PathBuf) -> Result<()> {
     Ok(())
 }
 
+// Wrap text to fit within available space
+fn wrap_text(text: &str, font_size: f32, available_height_mm: f32) -> Vec<String> {
+    // Approximate character width for Helvetica Bold (pt to mm: 1pt ≈ 0.3528mm)
+    // Using 0.5 instead of 0.6 to allow more characters per line
+    let avg_char_width_mm = font_size * 0.5 * 0.3528;
+
+    // Calculate max characters per line
+    let max_chars = (available_height_mm / avg_char_width_mm) as usize;
+
+    if text.len() <= max_chars {
+        return vec![text.to_string()];
+    }
+
+    // Split text into words and wrap
+    let words: Vec<&str> = text.split_whitespace().collect();
+    let mut lines = Vec::new();
+    let mut current_line = String::new();
+
+    for word in words {
+        let test_line = if current_line.is_empty() {
+            word.to_string()
+        } else {
+            format!("{} {}", current_line, word)
+        };
+
+        if test_line.len() <= max_chars {
+            current_line = test_line;
+        } else {
+            if !current_line.is_empty() {
+                lines.push(current_line);
+            }
+            current_line = word.to_string();
+        }
+    }
+
+    if !current_line.is_empty() {
+        lines.push(current_line);
+    }
+
+    if lines.is_empty() {
+        vec![text.to_string()]
+    } else {
+        lines
+    }
+}
+
 fn draw_card_grid(
     doc: &PdfDocumentReference,
     layer: PdfLayerIndex,
@@ -201,37 +247,39 @@ fn draw_card_grid(
 
             current_layer.add_line(line);
 
-            // Draw text rotated 90 degrees clockwise
+            // Draw text rotated 90 degrees clockwise with word wrapping
             let text = if is_front { &card.side_a } else { &card.side_b };
 
-            // Position text and rotate 90 degrees clockwise
             let font_size = 18.0;
+            let line_spacing_mm = 7.0; // Horizontal space between wrapped lines
 
-            // For 90° clockwise rotation, text flows downward
-            // Center horizontally, align with top of card
+            // Available space for text (rotated, so height becomes the constraint)
+            let available_height = card_height_mm - 2.0 * TEXT_MARGIN_MM;
+
+            // Wrap text if needed
+            let lines = wrap_text(text, font_size, available_height);
+
+            // Starting position (same as before, centered horizontally)
             let text_x = x + card_width_mm / 2.0;
             let text_y = y + card_height_mm - TEXT_MARGIN_MM;
 
-            // Begin text section
-            current_layer.begin_text_section();
+            // Draw each line, offset horizontally for rotation
+            for (i, line) in lines.iter().enumerate() {
+                let line_x = text_x - i as f32 * line_spacing_mm;
 
-            // Set font
-            current_layer.set_font(font, font_size);
+                current_layer.begin_text_section();
+                current_layer.set_font(font, font_size);
+                current_layer.set_line_height(font_size);
 
-            // Set line height (required)
-            current_layer.set_line_height(font_size);
+                current_layer.set_text_matrix(TextMatrix::TranslateRotate(
+                    Mm(line_x).into(),
+                    Mm(text_y).into(),
+                    -90.0,
+                ));
 
-            // Use transformation matrix for rotation
-            // For 90 degrees clockwise rotation
-            current_layer.set_text_matrix(TextMatrix::TranslateRotate(
-                Mm(text_x).into(),
-                Mm(text_y).into(),
-                -90.0, // degrees, not radians
-            ));
-
-            current_layer.write_text(text, font);
-
-            current_layer.end_text_section();
+                current_layer.write_text(line, font);
+                current_layer.end_text_section();
+            }
         }
     }
 }
