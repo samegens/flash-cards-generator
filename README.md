@@ -41,13 +41,14 @@ flash-cards-generator -i <input.csv> -o <output.pdf>
 ## CSV Format
 
 The input CSV file should:
+
 - Use pipe (`|`) as the delimiter
 - Have no headers
 - Contain two columns: Side A | Side B
 
 Example:
 
-```
+```text
 Hello|Bonjour
 Goodbye|Au revoir
 Please|S'il vous plaît
@@ -63,20 +64,5 @@ Thank you|Merci
 ## Layout
 
 - Each A4 page contains 16 cards in a 4x4 grid
-- Card dimensions are automatically calculated to fit the page with margins
+- Card dimensions are automatically calculated to fit the page
 - The application ensures proper alignment when pages are printed double-sided
-
-## How It Works
-
-1. **CSV Parsing**: Reads the pipe-delimited CSV file without headers
-2. **Page Calculation**: Determines how many pages are needed (always even number)
-3. **Front Pages**: Cards are laid out in normal left-to-right, top-to-bottom order
-4. **Back Pages**: Cards are horizontally mirrored so they align correctly when flipped along the long edge
-5. **PDF Generation**: Creates a single PDF file with all pages
-
-## Dependencies
-
-- `clap`: Command-line argument parsing
-- `csv`: CSV file parsing
-- `printpdf`: PDF generation
-- `anyhow`: Error handling
