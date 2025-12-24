@@ -65,9 +65,10 @@ Thank you|Merci
 
 ## Printing Instructions
 
-1. Print the generated PDF using double-sided printing
-2. Select "Flip on long edge" (or "Long-edge binding") in your printer settings
-3. This ensures that when you flip the page vertically, the backs align correctly with the fronts
+1. Use 160 gram/m² paper if your printer can handle it, this will prevent the backside from being readable
+2. Print the generated PDF using double-sided printing
+3. Select "Flip on long edge" (or "Long-edge binding") in your printer settings. This ensures that when you flip the page vertically, the backs align correctly with the fronts
+4. Cut along the cutting lines
 
 ## Layout
 
