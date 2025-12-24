@@ -2,6 +2,12 @@
 
 A Rust command-line application that generates printable flash cards from CSV data.
 
+*Note*: I used this project to test the current state of [Claude Code](https://claude.com/product/claude-code).
+It managed to create an application that did what I needed (with quite some coercing).
+However it did not create it in the way I wanted: using clean code, TDD and other best practices.
+I could have added that in the prompt, but I wanted to know if AI will use best practices when
+not prompted. Sadly, it doesn't, yet.
+
 ## Features
 
 - Generates A4 PDF documents with 16 flash cards per double-sided page (4x4 grid)
