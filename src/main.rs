@@ -229,31 +229,6 @@ fn draw_card_grid(
             let x = margin_mm + col as f32 * card_width_mm;
             let y = A4_HEIGHT_MM - margin_mm - (row + 1) as f32 * card_height_mm;
 
-            // Draw cutting lines (only interior borders, not outer edges)
-            // Draw right border if not the last column
-            if col < GRID_COLS - 1 {
-                let line = Line {
-                    points: vec![
-                        (Point::new(Mm(x + card_width_mm), Mm(y)), false),
-                        (Point::new(Mm(x + card_width_mm), Mm(y + card_height_mm)), false),
-                    ],
-                    is_closed: false,
-                };
-                current_layer.add_line(line);
-            }
-
-            // Draw top border if not the first row
-            if row > 0 {
-                let line = Line {
-                    points: vec![
-                        (Point::new(Mm(x), Mm(y + card_height_mm)), false),
-                        (Point::new(Mm(x + card_width_mm), Mm(y + card_height_mm)), false),
-                    ],
-                    is_closed: false,
-                };
-                current_layer.add_line(line);
-            }
-
             // Draw text rotated 90 degrees clockwise with word wrapping
             let text = if is_front { &card.side_a } else { &card.side_b };
 
@@ -288,5 +263,38 @@ fn draw_card_grid(
                 current_layer.end_text_section();
             }
         }
+    }
+
+    // Draw complete cutting grid (always draw full grid, even if page isn't full)
+    // Vertical cutting lines between columns
+    for col in 1..GRID_COLS {
+        let x = margin_mm + col as f32 * card_width_mm;
+        let y_start = margin_mm;
+        let y_end = A4_HEIGHT_MM - margin_mm;
+
+        let line = Line {
+            points: vec![
+                (Point::new(Mm(x), Mm(y_start)), false),
+                (Point::new(Mm(x), Mm(y_end)), false),
+            ],
+            is_closed: false,
+        };
+        current_layer.add_line(line);
+    }
+
+    // Horizontal cutting lines between rows
+    for row in 1..GRID_ROWS {
+        let y = A4_HEIGHT_MM - margin_mm - row as f32 * card_height_mm;
+        let x_start = margin_mm;
+        let x_end = A4_WIDTH_MM - margin_mm;
+
+        let line = Line {
+            points: vec![
+                (Point::new(Mm(x_start), Mm(y)), false),
+                (Point::new(Mm(x_end), Mm(y)), false),
+            ],
+            is_closed: false,
+        };
+        current_layer.add_line(line);
     }
 }
