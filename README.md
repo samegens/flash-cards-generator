@@ -1,5 +1,7 @@
 # Flash Cards Generator
 
+![CI](https://github.com/samegens/flash-cards-generator/actions/workflows/ci.yml/badge.svg)
+
 A Rust command-line application that generates printable flash cards from CSV data.
 
 *Note*: I used this project to test the current state of [Claude Code](https://claude.com/product/claude-code).
